@@ -9,11 +9,11 @@ import (
 )
 
 type Logger struct {
-    Info    func(...interface{})
-    Warning func(...interface{})
-    Error   func(...interface{})
-    Dump    func(...interface{})
-    Log    func(...interface{})
+    // Info    func(...interface{})
+    // Warning func(...interface{})
+    // Error   func(...interface{})
+    // Dump    func(...interface{})
+    // Log    func(...interface{})
     Test   func(...interface{})
 }
 
