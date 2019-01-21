@@ -4,6 +4,8 @@ import (
     "github.com/davecgh/go-spew/spew"
     "log"
     "os"
+    "runtime"
+    "strconv"
 )
 
 type Logger struct {
@@ -12,6 +14,7 @@ type Logger struct {
     Error   func(...interface{})
     Dump    func(...interface{})
     Log    func(...interface{})
+    Test   func(...interface{})
 }
 
 func InitLogger() *Logger {
@@ -26,6 +29,18 @@ func InitLogger() *Logger {
         // Clear coloring
         logger.Log("\x1b[93mDUMP: \x1b[0m")
         spew.Dump(data...)
+    }
+
+    logger.Test = func(data ...interface{}) {
+        _, filename, line, ok := runtime.Caller(1)
+        if (!ok) {
+            return
+        }
+        testLog := log.New(logHandle,
+        filename+":"+strconv.Itoa(line)+" \x1b[0m",
+        log.Ldate|log.Ltime).Println
+
+        testLog(data...)
     }
 
     logger.Log = log.New(logHandle,
