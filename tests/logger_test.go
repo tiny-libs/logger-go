@@ -21,6 +21,6 @@ func (s *Suite) TestSub(ch *check.C) {
 	loggerInstance := logger.InitLogger()
 	val = "world"
 	ch.Check(val, check.Equals, "world")
-	loggerInstance.Log("test")
+	// loggerInstance.Log("test")
 	loggerInstance.Test("test")
 }
