@@ -1,9 +1,6 @@
 package logger
 
 import (
-	"io"
-	"bytes"
-	"os"
 	"fmt"
 	check "gopkg.in/check.v1"
 	"testing"
@@ -19,35 +16,29 @@ func Test(t *testing.T) {
 
 type Suite struct{}
 
-func (s *Suite) TestSub(ch *check.C) {
+func (s *Suite) TestLog(ch *check.C) {
+	var captureChan <-chan string
+
 	loggerInstance := logger.InitLogger()
-	var val string
-	rescueStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
 
-	val = "world"
-	ch.Check(val, check.Equals, "world")
-
-	// loggerInstance.Log("test")
+	captureChan = startCapture()
 	loggerInstance.Test("test")
+	stopCapture()
 
-    outC := make(chan string)
-    // copy the output in a separate goroutine so printing can't block indefinitely
-    go func() {
-        var buf bytes.Buffer
-        io.Copy(&buf, r)
-        outC <- buf.String()
-    }()
+	fmt.Printf("Captured: %s", <-captureChan)
+	captureChan = startCapture()
+	loggerInstance.Test("test2")
+	stopCapture()
 
-	w.Close()
-	os.Stdout = rescueStdout
-	out := <-outC
+	fmt.Printf("Captured: %s", <-captureChan)
+	captureChan = startCapture()
+	loggerInstance.Test("test3")
+	stopCapture()
 
-	fmt.Printf("Captured: %s", out)
+	fmt.Printf("Captured: %s", <-captureChan)
+	captureChan = startCapture()
+	loggerInstance.Test("test4")
+	stopCapture()
 
-	out = <-captureStdout()
-	fmt.Printf("Captured: %s", out)
-
-	ch.Check(val, check.Equals, "world")
+	fmt.Printf("Captured: %s", <-captureChan)
 }
