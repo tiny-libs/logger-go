@@ -6,57 +6,95 @@ import (
     "os"
     "runtime"
     "strconv"
+    "time"
+    // "regexp"
+    "path/filepath"
 )
 
-type Logger struct {
-    // Info    func(...interface{})
-    // Warning func(...interface{})
-    // Error   func(...interface{})
-    Dump    func(...interface{})
-    // Log    func(...interface{})
-    Test   func(...interface{})
+var workingDirectory string
+
+func init() {
+    workingDirectory, _ = os.Getwd()
+
+    log.SetFlags(0)
 }
 
-func InitLogger() *Logger {
-    logger := &Logger{}
-
+func preparePrefix(data *interface{}, textPrefix string) {
+    str, ok := (*data).(string)
+    if (!ok) {
+        return
+    }
     logHandle := os.Stdout
-    // infoHandle := os.Stdout
-    // warningHandle := os.Stdout
-    // errorHandle := os.Stderr
+    log.SetOutput(logHandle)
 
-    logger.Dump = func(data ...interface{}) {
-        // Clear coloring
-        // logger.Log("\x1b[93mDUMP: \x1b[0m")
-        spew.Dump(data...)
+    _, filename, line, ok := runtime.Caller(2)
+    if (!ok) {
+        return
+    }
+    // functionObject := runtime.FuncForPC(pc)
+    // extractFnName := regexp.MustCompile(`^.*\/.*?\.(.*)$`)
+    // fnName := extractFnName.ReplaceAllString(functionObject.Name(), "$1")
+
+    rel, err := filepath.Rel(workingDirectory, filename)
+    if (err != nil) {
+        return
     }
 
-    logger.Test = func(data ...interface{}) {
-        _, filename, line, ok := runtime.Caller(1)
-        if (!ok) {
-            return
-        }
-        testLog := log.New(logHandle,
-        filename+":"+strconv.Itoa(line)+" \x1b[0m",
-        log.Ldate|log.Ltime).Println
+    *data = time.Now().UTC().Format("2006-01-02 15:04:05.999") + " " + rel+":"+strconv.Itoa(line)+" " + textPrefix +"\x1b[0m " + str
+}
 
-        testLog(data...)
+func Log(data ...interface{}) {
+    logHandle := os.Stdout
+    log.SetOutput(logHandle)
+
+    preparePrefix(&data[0], "\x1b[90m[LOG]")
+    // data[0] = time.Now().UTC().Format("2006-01-02 15:04:05.999") + " " + rel+fnName+":"+strconv.Itoa(line)+" \x1b[93m[LOG]\x1b[0m " + str
+    log.Println(data...)
+}
+
+func Info(data ...interface{}) {
+    logHandle := os.Stdout
+    log.SetOutput(logHandle)
+
+    preparePrefix(&data[0], "\x1b[36m[INFO]")
+    // data[0] = time.Now().UTC().Format("2006-01-02 15:04:05.999") + " " + rel+fnName+":"+strconv.Itoa(line)+" \x1b[93m[LOG]\x1b[0m " + str
+    log.Println(data...)
+}
+
+func Warning(data ...interface{}) {
+    logHandle := os.Stdout
+    log.SetOutput(logHandle)
+
+    preparePrefix(&data[0], "\x1b[93m[WARN]")
+    // data[0] = time.Now().UTC().Format("2006-01-02 15:04:05.999") + " " + rel+fnName+":"+strconv.Itoa(line)+" \x1b[93m[LOG]\x1b[0m " + str
+    log.Println(data...)
+}
+
+func Error(data ...interface{}) {
+    logHandle := os.Stdout
+    log.SetOutput(logHandle)
+
+    preparePrefix(&data[0], "\x1b[31m[ERROR]")
+    // data[0] = time.Now().UTC().Format("2006-01-02 15:04:05.999") + " " + rel+fnName+":"+strconv.Itoa(line)+" \x1b[93m[LOG]\x1b[0m " + str
+    log.Println(data...)
+}
+
+func Dump(data ...interface{}) {
+    logHandle := os.Stdout
+    log.SetOutput(logHandle)
+
+    _, filename, line, ok := runtime.Caller(2)
+    if (!ok) {
+        return
     }
+    // functionObject := runtime.FuncForPC(pc)
+    // extractFnName := regexp.MustCompile(`^.*\/.*?\.(.*)$`)
+    // fnName := extractFnName.ReplaceAllString(functionObject.Name(), "$1")
 
-    // logger.Log = log.New(logHandle,
-    //     "\x1b[0m",
-    //     log.Ldate|log.Ltime|log.Lshortfile).Println
-
-    // logger.Info = log.New(infoHandle,
-    //     "\x1b[96mINFO: ",
-    //     log.Ldate|log.Ltime|log.Lshortfile).Println
-
-    // logger.Warning = log.New(warningHandle,
-    //     "\x1b[33;1m WARNING: ",
-    //     log.Ldate|log.Ltime|log.Lshortfile).Println
-
-    // logger.Error = log.New(errorHandle,
-    //     "\x1b[31;1m  ERROR: ",
-    //     log.Ldate|log.Ltime|log.Lshortfile).Println
-    return logger
+    rel, err := filepath.Rel(workingDirectory, filename)
+    if (err != nil) {
+        return
+    }
+    log.Println(time.Now().UTC().Format("2006-01-02 15:04:05.999") + " " + rel+":"+strconv.Itoa(line)+" \x1b[35m[DUMP]\x1b[0m ")
+    spew.Dump(data...)
 }

@@ -1,5 +1,7 @@
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
+# github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d
+github.com/kami-zh/go-capturer
 # github.com/kr/pretty v0.1.0
 github.com/kr/pretty
 # github.com/kr/text v0.1.0
