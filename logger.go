@@ -83,7 +83,7 @@ func Dump(data ...interface{}) {
     logHandle := os.Stdout
     log.SetOutput(logHandle)
 
-    _, filename, line, ok := runtime.Caller(2)
+    _, filename, line, ok := runtime.Caller(1)
     if (!ok) {
         return
     }
