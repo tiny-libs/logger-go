@@ -6,22 +6,21 @@ Golang logger
 
 ## Available methods:
 ```go
-logger.Dump(...interface{}) // Reference to spew: https://github.com/davecgh/go-spew
-logger.Log(...interface{})
-logger.Info(...interface{})
-logger.Warning(...interface{})
-logger.Error(...interface{})
+log.Dump(...interface{}) // Reference to spew: https://github.com/davecgh/go-spew
+log.Log(...interface{})
+log.Info(...interface{})
+log.Warning(...interface{})
+log.Error(...interface{})
 ```
 
 ## Example usage:
 ```go
 package main
 
-var log *logger.Logger
-func init() {
-	log = logger.InitLogger()
-	flag.Parse()
-}
+
+import (
+	log "github.com/tiny-libs/logger-go"
+)
 
 func main() {
 	log.Info("Hello world")
